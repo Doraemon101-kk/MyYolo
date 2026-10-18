@@ -1,0 +1,28 @@
+# CPU 课堂演示：运行 5 轮，观察日志、验证指标、曲线和权重输出。
+# 先按照 README 的 CPU 演示步骤生成 datasets/tutorial_cpu/data.yaml。
+model: yolo11n.yaml       # 从自带结构随机初始化，不依赖预训练权重下载
+pretrained: false
+data: datasets/tutorial_cpu/data.yaml
+epochs: 5
+device: cpu
+imgsz: 320
+batch: 4
+workers: 0
+amp: false
+patience: 0
+
+optimizer: AdamW
+lr0: 0.001
+warmup_epochs: 1.0
+mosaic: 0.0
+close_mosaic: 0
+cache: false
+
+seed: 42
+deterministic: true
+val: true
+plots: true
+save: true
+project: runs/detect
+name: cpu_demo
+exist_ok: false

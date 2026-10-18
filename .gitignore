@@ -1,0 +1,30 @@
+# Python and local tooling
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.idea/
+.vscode/
+
+# Local datasets and media
+data/
+datasets/
+videos/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Models and generated experiments
+*.pt
+*.onnx
+*.engine
+weights/
+runs/
+
+# OS files
+.DS_Store
+Thumbs.db

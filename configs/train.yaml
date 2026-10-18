@@ -1,0 +1,51 @@
+# 相对路径以执行命令时所在目录为准。优先级：默认值 < 本文件 < 常用命令行选项 < --set。
+# 本配置适用于目标检测；类别信息在数据集 data.yaml 中设置。
+model: yolo11n.pt          # 小模型适合入门；可换 yolo11s.pt 或 yolov8n.pt
+data: datasets/robot/data.yaml
+epochs: 100
+imgsz: 640                # 边长通常是 32 的倍数；增大有助于小目标，但占用更多显存
+batch: 8                  # 显存不足优先降到 4、2、1；单 GPU 可试 -1
+device: cpu               # 有可用 CUDA 时改成 "0"；多卡 "0,1"
+workers: 0                # Windows 入门设 0，稳定后再试 2/4/8
+patience: 30              # 连续多轮无改进时早停；0 关闭早停
+
+# 指定 SGD 才便于演示 lr0/momentum；optimizer=auto 会自行选择，并忽略手动 lr0/momentum。
+optimizer: SGD
+lr0: 0.01                 # 初始学习率；AdamW 常从 0.001 尝试
+lrf: 0.01                 # 最终学习率系数；最终学习率约为 lr0*lrf
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3.0
+cos_lr: false             # 是否使用余弦学习率调度
+amp: true                 # 支持时使用自动混合精度
+
+# 数据增强：应符合比赛场景，避免不合理的翻转或颜色改变。
+hsv_h: 0.015              # 红蓝阵营依赖颜色时，应降低或关闭色相增强
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.0
+close_mosaic: 10          # 最后 10 轮关闭 mosaic；极短试跑可设 0
+
+# 检测损失权重，建议先保留默认值，再单变量实验。
+box: 7.5
+cls: 0.5
+dfl: 1.5
+
+seed: 42
+deterministic: true       # 尽量可复现；不同硬件/库版本仍可能有差异
+cache: false             # 内存充足可试 ram；也可用 disk
+val: true
+plots: true
+save: true
+save_period: -1          # -1 不额外保存周期性检查点
+project: runs/detect
+name: robot_baseline
+exist_ok: false           # 同名实验自动递增目录，避免混在一起
