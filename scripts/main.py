@@ -81,6 +81,59 @@ for index, box in enumerate(result.boxes, start=1):
                             kernel,
                             iterations=2)
 
+    contours, _ = cv2.findContours(mask,
+                                cv2.RETR_EXTERNAL,
+                                cv2.CHAIN_APPROX_SIMPLE)
+
+    if not contours:
+        print(f"没有找到轮廓：{class_name}")
+        continue
+
+    largest_contour = max(contours, key=cv2.contourArea)
+
+    contour_area = cv2.contourArea(largest_contour)
+
+    moments = cv2.moments(largest_contour)
+
+    if moments["m00"] == 0:
+        print(f"轮廓面积为零，无法计算质心：{class_name}")
+        continue
+
+    local_center_x = int(moments["m10"] / moments["m00"])
+    local_center_y = int(moments["m01"] / moments["m00"])
+
+    global_center_x = x1 + local_center_x
+    global_center_y = y1 + local_center_y
+    print(f"{class_name} 质心："f"局部坐标 ({local_center_x}, {local_center_y})，"f"原图坐标 ({global_center_x}, {global_center_y})")
+
+
+    filled_mask = mask.copy()
+    filled_mask[:] = 0
+    #把目标内部阴影异常部分也填满覆盖
+    cv2.drawContours(
+        filled_mask,
+        [largest_contour],
+        contourIdx=-1,
+        color=255,
+        thickness=cv2.FILLED,
+    )
+
+    filled_output_path = (
+        filled_output_dir
+        / f"{index}_{class_name}_filled.png"
+    )
+
+    filled_saved = cv2.imwrite(
+        str(filled_output_path),
+        filled_mask)
+
+    if filled_saved:
+        print(
+            f"填充轮廓已保存：{filled_output_path}，"
+            f"轮廓面积：{contour_area:.0f} 像素"
+        )
+    else:
+        print(f"填充轮廓保存失败：{filled_output_path}")
     mask_output_path = (mask_output_dir / f"{index}_{class_name}_mask.png")
 
     mask_saved = cv2.imwrite(str(mask_output_path),mask)   
